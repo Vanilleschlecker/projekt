@@ -86,10 +86,31 @@
           $x++;
         }
 
+        //Array
+
+        $Color["Schrift"] = "white";
+        $Color["Tabelle"] = "blue";
+        $Color["Hintergrund"] = "yellow";
+
+        echo $Color["Tabelle"];
+        print_r($Color);
         //gerade ungerade Zahlen
 
-        $geradeunge = 0;
+        //
 
+        $arr = array("Eins", "Zwei");
+        natsort($arr);
+        print_r($arr);
+        sort($arr);
+        print_r($arr);
+        arsort($arr);
+        print_r($arr);
+        asort($arr);
+        print_r($arr);
+        echo count($arr);
+
+        $key = array_search("Eins", $arr);
+        echo $key;
 
 
       ?>
@@ -98,6 +119,7 @@
         <tr>
           <td>
             <?php
+            $geradeunge = 0;
             while($geradeunge <= 1000)
             {
               if($geradeunge % 2 == 0)
