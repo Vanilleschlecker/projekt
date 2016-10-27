@@ -56,7 +56,11 @@ if(isset($_GET['logout']))
             if($sql->num_rows > 0)
             {
               $user = $sql->fetch_object();
-              echo "<img src='./images/".$user->Image."'>'";
+              if($user->Image)
+              {
+                  echo "<img src='./images/".$user->Image."'>'";
+              }
+
             } else {
               echo 'KEIN USERACCOUNT GEFUNDEN, HACK??!';
             }
@@ -67,7 +71,7 @@ if(isset($_GET['logout']))
 
         /*$sql = "SELECT * FROM benutzer_tbl";
         $abfrage = $mysqli->query($sql);
-        while($row = $abfrage->fetch_object())
+        while($row = $abfrage->fetch_object())s
         {
           print_r($row);
         }*/
