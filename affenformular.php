@@ -1,6 +1,20 @@
 <?php
 session_start();
 
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "benutzer";
+
+// Create connection
+
+$mysqli = new mysqli($servername, $username, $password, $dbname, 3306);
+if($mysqli->connect_errno)
+{
+echo 'Datenbankverbindung fehlerhaft!';
+exit;
+}
+
 if(isset($_GET['logout']))
 {
     $_SESSION['eingeloggt'] = false;
@@ -18,11 +32,11 @@ if(isset($_GET['logout']))
       <div class="row">
         <h1>Registration</h1>
         <div class="col-md-12">
-          <form action="affenformular.php" method="post">
+          <form action="affenformular.php" method="post" enctype="multipart/form-data">
             <input type="text" name="Benutzername" placeholder="Benutzername" class="form-control"/>
             <input type="password" name="pw" placeholder="Passwort" class="form-control"/>
             <input type="password" name="pwbest" placeholder="Passwort bestätigen" class="form-control"/>
-            <input type="password" name="image" placeholder="Bild" class="form-control"/>
+            <input id="input-1" name="image" type="file" class="file">
             <br>
             <button type="submit" name="register" value="absenden" class="form-control btn btn-primary">Absenden</Button>
           </form>
@@ -37,22 +51,19 @@ if(isset($_GET['logout']))
         </form>
           <?php if(@$_SESSION['eingeloggt'] == true){
             echo "<a href='affenformular.php?logout=true'>Log Out</a>";
+            echo @$_SESSION['username'];
+            $sql = $mysqli->query("SELECT * FROM benutzer_tbl WHERE Benutzername = '".$_SESSION['username']."' ");
+            if($sql->num_rows > 0)
+            {
+              $user = $sql->fetch_object();
+              echo "<img src='./images/".$user->Image."'>'";
+            } else {
+              echo 'KEIN USERACCOUNT GEFUNDEN, HACK??!';
+            }
           }
           ?>
           <?php
-          $servername = "localhost";
-          $username = "root";
-          $password = "";
-          $dbname = "benutzer";
 
-          // Create connection
-
-        $mysqli = new mysqli($servername, $username, $password, $dbname, 3306);
-        if($mysqli->connect_errno)
-        {
-          echo 'Datenbankverbindung fehlerhaft!';
-          exit;
-        }
 
         /*$sql = "SELECT * FROM benutzer_tbl";
         $abfrage = $mysqli->query($sql);
@@ -70,7 +81,9 @@ if(isset($_GET['logout']))
           $sql = $mysqli->query("SELECT * FROM benutzer_tbl WHERE Benutzername = '".$loginname."' AND Passwort = '".$loginpwd."' ");
           if($sql->num_rows > 0)
           {
-            echo 'Account gefunden';
+            $row = $sql->fetch_object();
+            $_SESSION['username'] = $row->Benutzername;
+            $_SESSION['passwort'] = $row->Passwort;
             $_SESSION['eingeloggt'] = true;
             header("location: ./affenformular.php");
             exit;
@@ -89,6 +102,8 @@ if(isset($_GET['logout']))
           $sql = $mysqli->query("SELECT * FROM benutzer_tbl WHERE Benutzername = '".$loginname."'");
           if($passwd == $confirm)
           {
+            print_r(@$_FILES);
+
               if($loginname != "")
               {
                 if($sql->num_rows > 0)
@@ -98,9 +113,8 @@ if(isset($_GET['logout']))
                 else
                 {
                   echo "Erfolgreiche Registrierung.";
-                  $sql = "INSERT INTO benutzer_tbl (Benutzername, Passwort) VALUES ('".$loginname."', '".$passwd."')";
-                  $mysqli->query($sql);
-
+                  $mysqli->query("INSERT INTO benutzer_tbl (Benutzername, Passwort, Image) VALUES ('".$loginname."', '".$passwd."', 'image_".$loginname.".png')");
+                  copy($_FILES["image"]["tmp_name"], "./images/image_".$loginname.".png");
                   $_SESSION['eingeloggt'] = true;
 
                   echo "Der Eintrag war erfolgreich";
@@ -111,6 +125,16 @@ if(isset($_GET['logout']))
               }
           }
       }
+
+        /*$sql = $mysqli->query("SELECT * FROM benutzer_tbl");
+        while($row = $sql->fetch_object())
+        {
+          if($row->Image != "")
+          {
+              echo "<img src='./images/".$row->Image."'>'";
+          }
+
+        }*/
 
 
 
