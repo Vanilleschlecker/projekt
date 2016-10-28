@@ -25,19 +25,53 @@ if(isset($_GET['logout']))
 <!DOCTYPE html>
 
 <html>
-<head><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+<head>
+  <script
+  src="https://code.jquery.com/jquery-3.1.1.js"
+  integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA="
+  crossorigin="anonymous"></script>
+  <script src="script.js"></script>
+  <link href="style.css" rel="stylesheet">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css?family=Bree+Serif" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 </head>
   <body>
     <section class="container">
       <div class="row">
         <h1>Registration</h1>
         <div class="col-md-12">
-          <form action="affenformular.php" method="post" enctype="multipart/form-data">
-            <input type="text" name="Benutzername" placeholder="Benutzername" class="form-control"/>
-            <input type="password" name="pw" placeholder="Passwort" class="form-control"/>
+          <form action="affenformular.php" method="post" enctype="multipart/form-data" id="myform">
+            <button value="lelelel" type="button" onclick="getConfirmation(this.value)"><i class="fa fa-comment" aria-hidden="true"></i></button>
+            <input id="username" type="text" name="Benutzername" placeholder="Benutzername" class="form-control"/>
+            <input class="form-control username" value="88">
+            <input type="password" name="pw" placeholder="Passwort" class="form-control password"/>
             <input type="password" name="pwbest" placeholder="Passwort bestätigen" class="form-control"/>
-            <input id="input-1" name="image" type="file" class="file">
+            <input id="input-1" name="image" type="file" class="file" required>
+            <textarea placeholder="Notizen" name="note" class="form-control note" rows="5" id="comment"></textarea>
+            <label class="radio-inline"><input type="radio" value="1" name="optradio">Option 1</label>
+            <label class="radio-inline"><input type="radio" value="2" name="optradio">Option 2</label>
+            <label class="radio-inline"><input type="radio" value="3" name="optradio">Option 3</label>
             <br>
+            <label class="checkbox-inline"><input name="ch1" type="checkbox">Mag Männer</label>
+            <label class="checkbox-inline"><input name="ch2" type="checkbox">Mag Frauen</label>
+            <label class="checkbox-inline"><input name="ch3" type="checkbox">Mag Kinder</label>
+            <div class="form-group">
+              <label for="sel1">Select list:</label>
+              <i class="fa fa-book"></i>
+              <select name="selectlist" class="form-control" id="sel1">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+              </select>
+            </div>
+            <input type="number" name="number" min="1" max="99" placeholder="Alter">
+            <input type="email" name="email" placeholder="E-Mail">
+
+            <br>
+            <input id="test" type="reset" class="hidden">
             <button type="submit" name="register" value="absenden" class="form-control btn btn-primary">Absenden</Button>
           </form>
         </div>
@@ -67,7 +101,7 @@ if(isset($_GET['logout']))
           }
           ?>
           <?php
-
+          /*required*/ //Um ein Feld als notwendig machen um anzumelden
 
         /*$sql = "SELECT * FROM benutzer_tbl";
         $abfrage = $mysqli->query($sql);
@@ -102,6 +136,39 @@ if(isset($_GET['logout']))
           $loginname = @$_POST['Benutzername'];
           $passwd = @$_POST['pw'];
           $confirm = @$_POST['pwbest'];
+          $radio = @$_POST['optradio'];
+          $ch1 = @$_POST['ch1'];
+          $ch2 = @$_POST['ch2'];
+          $ch3 = @$_POST['ch3'];
+          $selectlist = @$_POST['selectlist'];
+          $number = @$_POST['number'];
+          $mail = @$_POST['email'];
+          $note = @$_POST['note'];
+
+          if($ch1 == true)
+          {
+            $ch1 = 1;
+          }
+          else
+          {
+            $ch1 = 0;
+          }
+          if($ch2 == true)
+          {
+            $ch2 = 1;
+          }
+          else
+          {
+            $ch2 = 0;
+          }
+          if($ch3 == true)
+          {
+            $ch3 = 1;
+          }
+          else
+          {
+            $ch3 = 0;
+          }
 
           $sql = $mysqli->query("SELECT * FROM benutzer_tbl WHERE Benutzername = '".$loginname."'");
           if($passwd == $confirm)
@@ -117,10 +184,10 @@ if(isset($_GET['logout']))
                 else
                 {
                   echo "Erfolgreiche Registrierung.";
-                  $mysqli->query("INSERT INTO benutzer_tbl (Benutzername, Passwort, Image) VALUES ('".$loginname."', '".$passwd."', 'image_".$loginname.".png')");
+                  $mysqli->query("INSERT INTO benutzer_tbl (Benutzername, Passwort, Image, radio, MagMaenner, MagFrauen, MagKinder, selectlist, num, email, note) VALUES ('".$loginname."', '".$passwd."', 'image_".$loginname.".png', '".$radio."', '".$ch1."', '".$ch2."', '".$ch3."', '".$selectlist."', '".$number."', '".$mail."', '".$note."')");
                   copy($_FILES["image"]["tmp_name"], "./images/image_".$loginname.".png");
-                  $_SESSION['eingeloggt'] = true;
 
+                  print_r($mysqli);
                   echo "Der Eintrag war erfolgreich";
                 }
               }
@@ -129,6 +196,14 @@ if(isset($_GET['logout']))
               }
           }
       }
+
+        $sql = "SELECT * FROM benutzer_tbl";
+        $result = $mysqli->query($sql);
+
+        while ($row = $result->fetch_assoc())
+        {
+          echo $row['Benutzername'];
+        }
 
         /*$sql = $mysqli->query("SELECT * FROM benutzer_tbl");
         while($row = $sql->fetch_object())
